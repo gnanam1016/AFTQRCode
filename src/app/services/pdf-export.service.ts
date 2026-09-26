@@ -99,7 +99,16 @@ export class PdfExportService {
       // 2. Draw label text if enabled
       if (config.labelPosition !== 'none') {
         const centerX = cellX + qrWidth / 2;
+        const availableLabelWidth = qrWidth * 0.95;
+        const defaultFontSize = 10;
+        pdf.setFontSize(defaultFontSize);
+        const textWidthMm = pdf.getTextWidth(item.text);
+        if (textWidthMm > availableLabelWidth && textWidthMm > 0) {
+          const scaledFontSize = Math.max(5, Math.floor(defaultFontSize * (availableLabelWidth / textWidthMm)));
+          pdf.setFontSize(scaledFontSize);
+        }
         pdf.text(item.text, centerX, textY, { align: 'center' });
+        pdf.setFontSize(defaultFontSize);
       }
 
       // Update progress every 25 items or at the end
@@ -119,9 +128,9 @@ export class PdfExportService {
       }
     }
 
-    const startNum = items[0]?.value ?? config.startNumber;
-    const endNum = items[items.length - 1]?.value ?? config.endNumber;
-    const filename = `qr-codes-${startNum}-${endNum}.pdf`;
+    const startStr = (items[0]?.text ?? String(config.startNumber)).replace(/[<>:"/\\|?*]/g, '_');
+    const endStr = (items[items.length - 1]?.text ?? String(config.endNumber)).replace(/[<>:"/\\|?*]/g, '_');
+    const filename = `qr-codes-${startStr}-${endStr}.pdf`;
 
     pdf.save(filename);
 

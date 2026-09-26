@@ -105,6 +105,32 @@ import { QrCodeService } from '../../services/qr-code.service';
             </div>
           </div>
 
+          <!-- Data Prefix Option -->
+          <div class="form-group prefix-group">
+            <label for="prefixInput" class="label-with-badge">
+              <span>Data Prefix (Optional)</span>
+              <span class="preview-badge" *ngIf="form.get('prefix')?.value">
+                Preview: {{ form.get('prefix')?.value }}{{ form.get('startNumber')?.value }} – {{ form.get('prefix')?.value }}{{ form.get('endNumber')?.value }}
+              </span>
+            </label>
+            <div class="input-wrapper">
+              <input
+                id="prefixInput"
+                type="text"
+                formControlName="prefix"
+                class="form-control prefix-control"
+                placeholder="e.g. ITEM-, QR-, https://example.com/id="
+                maxlength="100"
+              />
+            </div>
+            <span class="field-hint">
+              Prepends a prefix to each QR code's encoded data (e.g.
+              <code>{{ (form.get('prefix')?.value || 'ITEM-') + (form.get('startNumber')?.value ?? 1) }}</code>
+              to
+              <code>{{ (form.get('prefix')?.value || 'ITEM-') + (form.get('endNumber')?.value ?? 10) }}</code>)
+            </span>
+          </div>
+
           <!-- Range Validation Alerts -->
           <div class="alert alert-danger" *ngIf="rangeError">
             <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
@@ -532,6 +558,43 @@ import { QrCodeService } from '../../services/qr-code.service';
       letter-spacing: 0.02em;
     }
 
+    .prefix-group {
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .prefix-control {
+      font-family: monospace;
+      letter-spacing: 0.02em;
+    }
+
+    .preview-badge {
+      font-size: 0.72rem;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .field-hint {
+      display: block;
+      font-size: 0.775rem;
+      color: #64748b;
+      margin-top: 0.35rem;
+
+      code {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-family: monospace;
+      }
+    }
+
     .form-control,
     .form-select {
       width: 100%;
@@ -789,6 +852,7 @@ export class QrSettingsComponent implements OnInit {
       startNumber: [config.startNumber, [Validators.required, Validators.min(0)]],
       endNumber: [config.endNumber, [Validators.required, Validators.min(0)]],
       count: [config.count, [Validators.required, Validators.min(1), Validators.max(MAX_BATCH_SIZE)]],
+      prefix: [config.prefix || ''],
 
       width: [config.width, [Validators.required, Validators.min(10)]],
       height: [config.height, [Validators.required, Validators.min(10)]],

@@ -239,9 +239,11 @@ export class QrGeneratorComponent {
       });
 
       this.generatedItems = items;
+      const startDisplay = (config.prefix || '') + config.startNumber;
+      const endDisplay = (config.prefix || '') + config.endNumber;
       this.notification = {
         type: 'success',
-        message: `Successfully generated ${items.length.toLocaleString()} QR codes (${config.startNumber} – ${config.endNumber}).`,
+        message: `Successfully generated ${items.length.toLocaleString()} QR codes (${startDisplay} – ${endDisplay}).`,
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unable to generate the QR codes. Please check your settings and try again.';

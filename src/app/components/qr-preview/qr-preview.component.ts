@@ -28,7 +28,7 @@ import {
           <h2 class="preview-title">QR Code Preview</h2>
           <div class="stats-badge" *ngIf="items.length > 0">
             <span class="badge-count">Generated: {{ items.length | number }} QR Codes</span>
-            <span class="badge-range">Range: {{ items[0].value }} – {{ items[items.length - 1].value }}</span>
+            <span class="badge-range">Range: {{ items[0].text }} – {{ items[items.length - 1].text }}</span>
           </div>
         </div>
 
@@ -42,7 +42,7 @@ import {
               type="text"
               [(ngModel)]="searchQuery"
               (ngModelChange)="onFilterChanged()"
-              placeholder="Search number (e.g. 1005)..."
+              placeholder="Search (e.g. 1005)..."
               class="search-input"
             />
             <button *ngIf="searchQuery" (click)="clearSearch()" class="clear-btn" title="Clear search">×</button>
@@ -526,7 +526,7 @@ export class QrPreviewComponent implements OnChanges {
     return index;
   }
 
-  trackByItemValue(index: number, item: QrCodeItem): number {
-    return item.value;
+  trackByItemValue(index: number, item: QrCodeItem): string | number {
+    return item.text || item.value;
   }
 }

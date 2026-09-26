@@ -21,7 +21,22 @@ describe('QrSettingsComponent', () => {
     expect(component.form.get('startNumber')?.value).toBe(DEFAULT_CONFIG.startNumber);
     expect(component.form.get('endNumber')?.value).toBe(DEFAULT_CONFIG.endNumber);
     expect(component.form.get('count')?.value).toBe(DEFAULT_CONFIG.count);
+    expect(component.form.get('prefix')?.value).toBe('');
     expect(component.form.get('embedDataInside')?.value).toBe(true);
+  });
+
+  describe('Prefix configuration', () => {
+    it('should emit config with updated prefix', () => {
+      let emittedConfig: any = null;
+      component.configChange.subscribe((cfg) => {
+        emittedConfig = cfg;
+      });
+
+      component.form.patchValue({ prefix: 'PROD-' });
+
+      expect(component.form.get('prefix')?.value).toBe('PROD-');
+      expect(emittedConfig?.prefix).toBe('PROD-');
+    });
   });
 
   describe('Bidirectional calculation', () => {
@@ -113,6 +128,7 @@ describe('QrSettingsComponent', () => {
       expect(component.form.get('startNumber')?.value).toBe(DEFAULT_CONFIG.startNumber);
       expect(component.form.get('endNumber')?.value).toBe(DEFAULT_CONFIG.endNumber);
       expect(component.form.get('count')?.value).toBe(DEFAULT_CONFIG.count);
+      expect(component.form.get('prefix')?.value).toBe('');
     });
   });
 });

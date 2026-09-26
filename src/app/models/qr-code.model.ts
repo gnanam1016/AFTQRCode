@@ -11,6 +11,7 @@ export interface QrGeneratorConfig {
   endNumber: number;
   count: number;
   lastEditedMode: 'count' | 'range';
+  prefix: string;
 
   width: number;
   height: number;
@@ -40,6 +41,7 @@ export const DEFAULT_CONFIG: QrGeneratorConfig = {
   endNumber: 10,
   count: 10,
   lastEditedMode: 'count',
+  prefix: '',
 
   width: 100,
   height: 100,

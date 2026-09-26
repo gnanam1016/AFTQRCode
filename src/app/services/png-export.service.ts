@@ -29,16 +29,17 @@ export class PngExportService {
   }
 
   /**
-   * Downloads a single QR code as {number}.png
+   * Downloads a single QR code as {text}.png
    */
   async downloadIndividualPng(item: QrCodeItem, config: QrGeneratorConfig): Promise<void> {
     let dataUrl = item.dataUrl;
     if (!dataUrl) {
-      dataUrl = await this.qrCodeService.generateQrDataUrl(item.value, config);
+      dataUrl = await this.qrCodeService.generateQrDataUrl(item.text, config);
     }
 
     const blob = await this.qrCodeService.dataUrlToBlob(dataUrl);
-    const filename = `${item.value}.png`;
+    const safeName = (item.text || String(item.value)).replace(/[<>:"/\\|?*]/g, '_');
+    const filename = `${safeName}.png`;
     this.downloadBlob(blob, filename);
   }
 
@@ -62,12 +63,13 @@ export class PngExportService {
       const item = items[index];
       let dataUrl = item.dataUrl;
       if (!dataUrl) {
-        dataUrl = await this.qrCodeService.generateQrDataUrl(item.value, config);
+        dataUrl = await this.qrCodeService.generateQrDataUrl(item.text, config);
       }
 
       // Extract base64 part
       const base64Data = dataUrl.split(',')[1];
-      const filename = `${item.value}.png`;
+      const safeName = (item.text || String(item.value)).replace(/[<>:"/\\|?*]/g, '_');
+      const filename = `${safeName}.png`;
       zip.file(filename, base64Data, { base64: true });
 
       if (index % 50 === 0 || index === total - 1) {
@@ -117,9 +119,9 @@ export class PngExportService {
       }
     );
 
-    const startNum = items[0]?.value ?? config.startNumber;
-    const endNum = items[items.length - 1]?.value ?? config.endNumber;
-    const zipFilename = `qr-codes-${startNum}-${endNum}.zip`;
+    const startStr = (items[0]?.text ?? String(config.startNumber)).replace(/[<>:"/\\|?*]/g, '_');
+    const endStr = (items[items.length - 1]?.text ?? String(config.endNumber)).replace(/[<>:"/\\|?*]/g, '_');
+    const zipFilename = `qr-codes-${startStr}-${endStr}.zip`;
 
     this.downloadBlob(zipBlob, zipFilename);
 

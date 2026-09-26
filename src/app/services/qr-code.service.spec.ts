@@ -80,6 +80,26 @@ describe('QrCodeService', () => {
       expect(progressList.length).toBeGreaterThan(0);
       expect(progressList[progressList.length - 1]).toBe(100);
     });
+
+    it('should prepend prefix to item text when prefix is configured', async () => {
+      const numbers = [1, 2];
+      const configWithPrefix = { ...DEFAULT_CONFIG, prefix: 'ITEM-' };
+
+      const items = await service.generateBatch(numbers, configWithPrefix);
+
+      expect(items.length).toBe(2);
+      expect(items[0].value).toBe(1);
+      expect(items[0].text).toBe('ITEM-1');
+      expect(items[1].value).toBe(2);
+      expect(items[1].text).toBe('ITEM-2');
+    });
+
+    it('should format QR text accurately with formatQrData helper', () => {
+      expect(service.formatQrData(42, 'QR_')).toBe('QR_42');
+      expect(service.formatQrData(42, '')).toBe('42');
+      expect(service.formatQrData(42)).toBe('42');
+      expect(service.formatQrData('CUSTOM', 'PRE_')).toBe('PRE_CUSTOM');
+    });
   });
 
   describe('Color contrast checking', () => {

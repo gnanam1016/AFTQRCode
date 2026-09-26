@@ -33,6 +33,13 @@ export class QrCodeService {
   }
 
   /**
+   * Formats QR code data text given a numeric value and optional prefix
+   */
+  formatQrData(value: number | string, prefix?: string): string {
+    return `${prefix || ''}${value}`;
+  }
+
+  /**
    * Clears the in-memory QR code image cache
    */
   clearCache(): void {
@@ -50,7 +57,10 @@ export class QrCodeService {
    * Generates a single QR code Data URL (PNG), optionally embedding the human-readable text inside
    */
   async generateQrDataUrl(value: string | number, config: QrGeneratorConfig): Promise<string> {
-    const text = String(value);
+    const text =
+      typeof value === 'number' && config.prefix
+        ? this.formatQrData(value, config.prefix)
+        : String(value);
     const cacheKey = this.getCacheKey(text, config);
 
     if (this.cache.has(cacheKey)) {
@@ -128,9 +138,9 @@ export class QrCodeService {
     let textMetrics = ctx.measureText(text);
     let textWidth = textMetrics.width;
 
-    const maxBadgeWidth = size * 0.35;
-    if (textWidth > maxBadgeWidth * 0.75) {
-      fontSize = Math.round(fontSize * ((maxBadgeWidth * 0.75) / textWidth));
+    const maxBadgeWidth = size * 0.45;
+    if (textWidth > maxBadgeWidth * 0.75 && textWidth > 0) {
+      fontSize = Math.max(8, Math.round(fontSize * ((maxBadgeWidth * 0.75) / textWidth)));
       ctx.font = `bold ${fontSize}px 'Inter', sans-serif, -apple-system`;
       textMetrics = ctx.measureText(text);
       textWidth = textMetrics.width;
@@ -201,11 +211,12 @@ export class QrCodeService {
       const chunkPromises = [];
       for (let j = i; j < sliceEnd; j++) {
         const val = numbers[j];
+        const text = this.formatQrData(val, config.prefix);
         chunkPromises.push(
-          this.generateQrDataUrl(val, config).then((dataUrl) => {
+          this.generateQrDataUrl(text, config).then((dataUrl) => {
             items[j] = {
               value: val,
-              text: String(val),
+              text,
               dataUrl,
             };
           })

@@ -44,7 +44,7 @@ import { LayoutCalcService } from '../../services/layout-calc.service';
         <div class="metric-item highlight">
           <span class="metric-label">Total QR Codes</span>
           <span class="metric-value">{{ config.count | number }}</span>
-          <span class="metric-sub">{{ config.startNumber }} – {{ config.endNumber }}</span>
+          <span class="metric-sub">{{ (config.prefix || '') + config.startNumber }} – {{ (config.prefix || '') + config.endNumber }}</span>
         </div>
 
         <!-- Metric: Estimated Pages -->
@@ -91,6 +91,15 @@ import { LayoutCalcService } from '../../services/layout-calc.service';
             {{ config.embedDataInside ? 'Embedded' : 'External' }}
           </span>
           <span class="metric-sub">{{ config.embedDataInside ? 'Center badge readable' : 'Standard matrix' }}</span>
+        </div>
+
+        <!-- Metric: Data Prefix -->
+        <div class="metric-item">
+          <span class="metric-label">Data Prefix</span>
+          <span class="metric-value prefix-val" [class.no-prefix]="!config.prefix">
+            {{ config.prefix ? config.prefix : 'None' }}
+          </span>
+          <span class="metric-sub">{{ config.prefix ? 'Prepended to QR data' : 'Raw numeric sequence' }}</span>
         </div>
       </div>
 
@@ -234,6 +243,18 @@ import { LayoutCalcService } from '../../services/layout-calc.service';
       font-weight: 700;
       color: #0f172a;
       line-height: 1.2;
+
+      &.prefix-val {
+        font-family: monospace;
+        font-size: 1.05rem;
+        word-break: break-all;
+
+        &.no-prefix {
+          font-family: inherit;
+          color: #94a3b8;
+          font-weight: 500;
+        }
+      }
     }
 
     .metric-sub {
